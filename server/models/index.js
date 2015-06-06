@@ -12,10 +12,6 @@ module.exports = {
       db.query(queryString, function(err, results) {
 
           if (err) throw err;
-
-
-
-          console.log(results);
           if (cb) cb(results);
       });
 
@@ -25,19 +21,27 @@ module.exports = {
     }, // a function which produces all the messages
     post: function (message, cb) {
 
-      var roomid = message.roomid;
       var messageContent = message.message;
-      var userid = message.userid;
+      var username = message.username;
+      var roomname = message.roomname;
 
-      var queryString = "INSERT INTO messages (message, roomid, userid) VALUES ('" + messageContent + "', " + roomid + ", " + userid + ")";
+      //roomname = (roomname != '') ? roomname : 'NULL'
 
-      console.log(queryString);
+      getIdFromTable('users','username',username,'userid', function(userid) {
 
-      db.query(queryString, function(err, results) {
+        getIdFromTable('rooms','roomname',roomname,'roomid', function(roomid) {
 
-          if (err) throw err;
-          console.log("message post complete");
-          if (cb) cb(results);
+          roomid = (roomid) ? roomid : 'NULL'
+
+          var queryString = "INSERT INTO messages (message, roomid, userid) VALUES ('" + messageContent + "', " + roomid + ", " + userid + ")";
+
+          db.query(queryString, function(err, results) {
+
+              if (err) throw err;
+              console.log("message post complete");
+              if (cb) cb(results);
+          });
+        });
       });
 
     } // a function which can be used to insert a message into the database
@@ -95,7 +99,7 @@ module.exports = {
 
 //SERVER to DB
 //'
-var getValuesFromTable = function(table, fields, id, idKey) {
+var getValuesFromTable = function(table, fields, id, idKey, cb) {
 
   var fieldString = fields.join(', ');
   var queryString = "SELECT " + fieldString + " FROM " + table + " WHERE " + idKey + "=" + id;
@@ -103,7 +107,7 @@ var getValuesFromTable = function(table, fields, id, idKey) {
   db.query(queryString, function(err, results) {
 
         if (err) throw err;
-        return results;
+        cb(results);
 
     });
 };
@@ -111,7 +115,29 @@ var getValuesFromTable = function(table, fields, id, idKey) {
 
 //
 //
-// getIdFromTable(table, field, value)
+getIdFromTable = function(table, field, value, idKey, cb) {
+
+  var queryString = "SELECT " + idKey + " FROM " + table + " WHERE " + field + "=" + "'" + value + "'";
+  db.query(queryString, function(err, results) {
+
+        if (err) throw err;
+        if (results && results[0] && results[0][idKey]) {
+          cb(results[0][idKey]);
+        } else {
+          cb(undefined)
+        }
+
+
+    });
+}
+
+
+
+
+
+
+
+
 //
 //
 //

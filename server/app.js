@@ -17,7 +17,9 @@ app.set("port", 3000);
 
 // Logging and parsing
 app.use(morgan('dev'));
+
 app.use(parser.json());
+
 
 // Set up our routes
 app.use("/classes", router);
@@ -36,8 +38,6 @@ if (!module.parent) {
   app.listen(app.get("port"));
   console.log("Listening on", app.get("port"));
 
-  models.messages.post({roomid: 1, message: 'f1rst p0stt', userid: 1});
-  models.users.post('Billy Bob III');
 
   // setTimeout(models.messages.get, 2000);
 }
