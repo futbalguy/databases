@@ -1,8 +1,12 @@
+DROP DATABASE IF EXISTS chat;
+
 CREATE DATABASE chat;
 
 USE chat;
 
 DROP TABLE IF EXISTS `messages`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `rooms`;
 
 CREATE TABLE messages (
   /* Describe your table here.*/

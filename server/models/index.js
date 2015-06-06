@@ -6,21 +6,24 @@ var db = require('../db/index.js');
 
 module.exports = {
   messages: {
-    get: function () {
+    get: function (cb) {
 
-      var queryString = "SELECT * FROM messages";
+      var queryString = "SELECT messages.*, users.* FROM messages INNER JOIN users ON messages.userid=users.userid";
       db.query(queryString, function(err, results) {
 
           if (err) throw err;
+
+
+
           console.log(results);
-          return results;
+          if (cb) cb(results);
       });
 
           //old final results
           //JSON.stringify({results: responseData})
 
     }, // a function which produces all the messages
-    post: function (message) {
+    post: function (message, cb) {
 
       var roomid = message.roomid;
       var messageContent = message.message;
@@ -33,8 +36,8 @@ module.exports = {
       db.query(queryString, function(err, results) {
 
           if (err) throw err;
-          console.log("post complete");
-
+          console.log("message post complete");
+          if (cb) cb(results);
       });
 
     } // a function which can be used to insert a message into the database
@@ -43,7 +46,50 @@ module.exports = {
   users: {
     // Ditto as above.
     get: function () {},
-    post: function () {}
+    post: function (username, cb) {
+
+      var queryString = "INSERT INTO users (username) VALUES ('" + username + "')" ;
+
+      console.log(queryString);
+
+      db.query(queryString, function(err, results) {
+
+        if (err) throw err;
+        console.log("user post complete");
+        if (cb) cb(results);
+
+      });
+
+    },
+
+    rooms: {
+      get: function(cb) {
+
+        var queryString = "SELECT * FROM rooms";
+        db.query(queryString, function(err, results) {
+
+          if (err) throw err;
+          console.log(results);
+          if (cb) cb(results)
+      });
+
+      },
+      post: function(roomname, cb) {
+
+        var queryString = "INSERT INTO rooms (roomname) VALUES ('" + roomname + "')" ;
+
+        console.log(queryString);
+        db.query(queryString, function(err, results) {
+
+          if (err) throw err;
+          console.log("room post complete");
+          if (cb) cb(results);
+
+      });
+
+      }
+    }
+
   }
 };
 
