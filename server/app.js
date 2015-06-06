@@ -1,5 +1,6 @@
 var express = require('express');
 var db = require('./db');
+var models = require('./models/index.js');
 
 // Middleware
 var morgan = require('morgan');
@@ -28,5 +29,9 @@ app.use(express.static(__dirname + "/../client"));
 if (!module.parent) {
   app.listen(app.get("port"));
   console.log("Listening on", app.get("port"));
+
+  models.messages.post({roomid: 1, message: 'f1rst p0stt', userid: 1});
+
+  setTimeout(models.messages.get, 5000);
 }
 
